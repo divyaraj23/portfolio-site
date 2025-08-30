@@ -1,6 +1,6 @@
 @charset "UTF-8";
 @import url(font-awesome.min.css);
-@import "https://fonts.googleapis.com/css?family=Montserrat:700|Open+Sans:300,400|Pacifico";
+/* Google Fonts moved to index.html for better performance (preconnect + HTTP/2) */
 
 /*
 	Intensify by TEMPLATED
