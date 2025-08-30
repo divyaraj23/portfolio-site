@@ -1,0 +1,26 @@
+{
+  "name": "portfolio-site",
+  "version": "1.0.0",
+  "description": "Personal portfolio website for Divyaraj Singh Sisodia",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "deploy": "powershell ./deploy.ps1",
+    "lint": "echo 'No linting configured'",
+    "build": "echo 'No build process needed - static site'"
+  },
+  "keywords": ["portfolio", "website", "static", "html", "css", "javascript"],
+  "author": "Divyaraj Singh Sisodia",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/portfolio-site.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/portfolio-site/issues"
+  },
+  "homepage": "https://yourusername.github.io/portfolio-site",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}
