@@ -1,86 +1,360 @@
 /**
- * Ultra-Modern Portfolio CSS
- * Features: Dark Mode, Advanced Animations, Glass Morphism, Smooth Transitions
- * Apple-like Design System
+ * Modern Portfolio Site - CSS
+ * Apple-like smooth animations and micro-interactions
+ * Optimized for performance and accessibility
  */
 
 /* ===========================
-   CSS Variables & Design Tokens
+   CSS Variables (Design Tokens)
    =========================== */
 :root {
-    /* Colors */
-    --primary: #f6755e;
-    --primary-dark: #e55e47;
-
-    /* Spacing */
     --header-height: 80px;
-
-    /* Transitions */
-    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-
-    /* Shadows */
+    --header-height-mobile: 64px;
+    --menu-width: 350px;
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 /* ===========================
    Base Styles
    =========================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+html {
+    scroll-behavior: smooth;
 }
 
-html {
-    font-size: 16px;
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 }
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
+/* Loading state */
+body.is-loading * {
+    animation: none !important;
+    transition: none !important;
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 800;
-    line-height: 1.2;
+/* ===========================
+   Header Styles
+   =========================== */
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 10000;
+    transition: all 0.3s var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
 }
 
-code, pre {
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+#header.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-md);
+    height: 70px;
+}
+
+/* Logo */
+#header .logo {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.75rem;
+    color: #f6755e;
+    text-decoration: none;
+    transition: all 0.3s var(--transition-smooth);
+    position: relative;
+    z-index: 10001;
+}
+
+#header .logo:hover {
+    color: #e55e47;
+    transform: translateY(-2px);
+}
+
+/* Menu Toggle Button */
+#header nav.left a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #1f2937;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s var(--transition-smooth);
+    background: transparent;
+}
+
+#header nav.left a:hover {
+    background: rgba(246, 117, 94, 0.1);
+    color: #f6755e;
+    transform: translateX(-3px);
+}
+
+#header nav.left a svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s var(--transition-smooth);
+}
+
+#header nav.left a:hover svg {
+    transform: rotate(90deg);
+}
+
+/* Mobile adjustments */
+@media (max-width: 736px) {
+    #header {
+        height: var(--header-height-mobile);
+        padding: 0 1rem;
+    }
+
+    #header .logo {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===========================
+   Mobile Menu
+   =========================== */
+#menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: var(--menu-width);
+    max-width: 85vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #25a2c3 0%, #1e8aa3 100%);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+    z-index: 10002;
+    transition: right 0.4s var(--transition-smooth);
+    overflow-y: auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+body.is-menu-visible #menu {
+    right: 0;
+}
+
+/* Menu backdrop */
+body.is-menu-visible::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10001;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Close button */
+#menu .close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s var(--transition-smooth);
+    text-decoration: none;
+}
+
+#menu .close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg) scale(1.1);
+}
+
+#menu .close svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Menu links */
+#menu .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-top: 4rem;
+}
+
+#menu .links li {
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+body.is-menu-visible #menu .links li {
+    animation: slideInRight 0.4s ease-out forwards;
+}
+
+body.is-menu-visible #menu .links li:nth-child(1) { animation-delay: 0.05s; }
+body.is-menu-visible #menu .links li:nth-child(2) { animation-delay: 0.1s; }
+body.is-menu-visible #menu .links li:nth-child(3) { animation-delay: 0.15s; }
+body.is-menu-visible #menu .links li:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes slideInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+#menu .links a {
+    display: block;
+    padding: 1rem 1.5rem;
+    color: white;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: all 0.2s var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+#menu .links a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: left 0.3s var(--transition-smooth);
+}
+
+#menu .links a:hover::before {
+    left: 0;
+}
+
+#menu .links a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(8px);
+    padding-left: 2rem;
+}
+
+/* ===========================
+   Scroll Reveal Animations
+   =========================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s var(--transition-smooth),
+                transform 0.6s var(--transition-smooth);
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===========================
+   Card Hover Effects (Apple-like)
+   =========================== */
+.group {
+    transition: all 0.3s var(--transition-smooth);
+    will-change: transform;
+}
+
+.group:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Smooth transitions for all interactive elements */
+a, button, .group, [class*="hover:"] {
+    transition: all 0.3s var(--transition-smooth);
+}
+
+/* ===========================
+   Performance Optimizations
+   =========================== */
+img {
+    content-visibility: auto;
+}
+
+/* GPU acceleration for animations */
+.group,
+#header,
+#menu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 
 /* ===========================
    Utility Classes
    =========================== */
 .backdrop-blur {
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-/* Primary Color */
-.text-primary {
-    color: var(--primary);
-}
-
-.bg-primary {
-    background-color: var(--primary);
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* ===========================
-   Animations
+   Gradient Animations
    =========================== */
+@keyframes gradient-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.animated-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 15s ease infinite;
+}
 
 /* Blob Animation */
 @keyframes blob {
@@ -99,7 +373,7 @@ code, pre {
 }
 
 .animate-blob {
-    animation: blob 7s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    animation: blob 7s infinite;
 }
 
 .animation-delay-2000 {
@@ -110,207 +384,38 @@ code, pre {
     animation-delay: 4s;
 }
 
-/* Bounce Animation */
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
+/* ===========================
+   Custom Scrollbar (Webkit)
+   =========================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
 }
 
-.animate-bounce {
-    animation: bounce 2s infinite ease-in-out;
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }
 
-/* Fade In Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
 }
 
-/* Page Transitions */
-body.page-loaded {
-    animation: fadeIn 0.5s ease-out;
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
-body.page-exit {
-    animation: fadeOut 0.3s ease-in forwards;
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        transform: scale(0.98);
-    }
-}
-
-/* Rainbow Effect (Easter Egg) */
-@keyframes rainbow {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
 }
 
 /* ===========================
-   Scroll Reveal
+   Focus Visible (Accessibility)
    =========================== */
-.reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s var(--transition-normal),
-                transform 0.6s var(--transition-normal);
-}
-
-.reveal.revealed {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* ===========================
-   Header Styles
-   =========================== */
-#header {
-    transition: all var(--transition-normal);
-}
-
-#header.shadow-md {
-    box-shadow: var(--shadow-md);
-}
-
-/* Logo */
-#header .logo {
-    font-family: 'Pacifico', cursive;
-    color: var(--primary);
-    transition: all var(--transition-fast);
-}
-
-#header .logo:hover {
-    color: var(--primary-dark);
-    transform: scale(1.05);
-}
-
-/* ===========================
-   Hero Section
-   =========================== */
-#hero {
-    min-height: 100vh;
-}
-
-#hero h1 {
-    animation: fadeIn 1s ease-out;
-}
-
-#hero p {
-    animation: fadeIn 1s ease-out 0.2s both;
-}
-
-#hero .flex {
-    animation: fadeIn 1s ease-out 0.4s both;
-}
-
-/* ===========================
-   Skills Section
-   =========================== */
-.skill-bar {
-    transition: all var(--transition-normal);
-}
-
-.skill-bar:hover {
-    transform: translateX(4px);
-}
-
-.skill-fill {
-    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.skill-percent {
-    font-weight: 600;
-    min-width: 40px;
-    text-align: right;
-}
-
-/* ===========================
-   Cards & Hover Effects
-   =========================== */
-.group {
-    transition: all var(--transition-normal);
-}
-
-.group:hover {
-    transform: translateY(-8px);
-}
-
-/* Card Shadows */
-.shadow-lg {
-    box-shadow: var(--shadow-lg);
-}
-
-.shadow-xl {
-    box-shadow: var(--shadow-xl);
-}
-
-.shadow-2xl {
-    box-shadow: var(--shadow-2xl);
-}
-
-.hover\:shadow-xl:hover {
-    box-shadow: var(--shadow-xl);
-}
-
-.hover\:shadow-2xl:hover {
-    box-shadow: var(--shadow-2xl);
-}
-
-/* ===========================
-   Timeline
-   =========================== */
-.timeline-item {
-    position: relative;
-    padding-left: 2rem;
-}
-
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--primary), transparent);
-}
-
-/* ===========================
-   Mobile Menu
-   =========================== */
-#mobileMenu {
-    box-shadow: var(--shadow-2xl);
-}
-
-#mobileMenu a {
-    transition: all var(--transition-fast);
-}
-
-#mobileMenu a:hover {
-    transform: translateX(4px);
-}
-
-/* ===========================
-   Buttons & Interactive Elements
-   =========================== */
-a, button {
-    transition: all var(--transition-fast);
-    cursor: pointer;
-}
-
-a:focus-visible, button:focus-visible {
-    outline: 2px solid var(--primary);
+:focus-visible {
+    outline: 2px solid #f6755e;
     outline-offset: 4px;
     border-radius: 4px;
 }
@@ -321,113 +426,11 @@ a:focus-visible, button:focus-visible {
 }
 
 /* ===========================
-   Custom Scrollbar
-   =========================== */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
-}
-
-/* Dark mode scrollbar */
-.dark ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* Firefox scrollbar */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-
-.dark * {
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-/* ===========================
-   Selection
-   =========================== */
-::selection {
-    background: var(--primary);
-    color: white;
-}
-
-::-moz-selection {
-    background: var(--primary);
-    color: white;
-}
-
-/* ===========================
-   Accessibility
-   =========================== */
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-
-    .animate-blob,
-    .animate-bounce {
-        animation: none !important;
-    }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-    body {
-        --primary: #ff5722;
-    }
-
-    a, button {
-        text-decoration: underline;
-    }
-}
-
-/* ===========================
-   Dark Mode Specific Styles
-   =========================== */
-.dark {
-    color-scheme: dark;
-}
-
-/* Dark mode transitions */
-.dark * {
-    transition-property: background-color, border-color, color, fill, stroke;
-    transition-duration: 0.3s;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ===========================
    Print Styles
    =========================== */
 @media print {
     #header,
-    #mobileMenu,
-    #menuOverlay,
-    #darkModeToggle,
-    #menuToggle,
+    #menu,
     .no-print {
         display: none !important;
     }
@@ -436,187 +439,22 @@ a:focus-visible, button:focus-visible {
         background: white !important;
         color: black !important;
     }
-
-    a[href]::after {
-        content: " (" attr(href) ")";
-    }
-
-    section {
-        page-break-inside: avoid;
-    }
 }
 
 /* ===========================
-   Responsive Utilities
+   Dark Mode Support
    =========================== */
-
-/* Mobile First Approach */
-@media (max-width: 640px) {
-    :root {
-        --header-height: 64px;
+@media (prefers-color-scheme: dark) {
+    #header {
+        background: rgba(17, 24, 39, 0.8);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
     }
 
-    h1 {
-        font-size: 2.5rem;
+    #header nav.left a {
+        color: #e5e7eb;
     }
 
-    h2 {
-        font-size: 2rem;
-    }
-}
-
-/* Tablet */
-@media (min-width: 768px) {
-    .md\:grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .md\:grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .md\:grid-cols-4 {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-    .lg\:grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .lg\:grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-/* ===========================
-   Performance Optimizations
-   =========================== */
-
-/* GPU Acceleration */
-.group,
-#header,
-#mobileMenu,
-.animate-blob {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
-
-/* Content Visibility */
-section {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 500px;
-}
-
-/* ===========================
-   Loading States
-   =========================== */
-.loading {
-    pointer-events: none;
-    opacity: 0.6;
-    filter: grayscale(0.5);
-}
-
-/* ===========================
-   Gradients
-   =========================== */
-.gradient-text {
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-image: linear-gradient(135deg, var(--primary) 0%, #e55e47 100%);
-}
-
-/* ===========================
-   Glass Morphism
-   =========================== */
-.glass {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px) saturate(180%);
-    -webkit-backdrop-filter: blur(10px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dark .glass {
-    background: rgba(0, 0, 0, 0.1);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* ===========================
-   Modern Hover Effects
-   =========================== */
-.hover-lift {
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-}
-
-.hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
-}
-
-.hover-scale {
-    transition: transform var(--transition-normal);
-}
-
-.hover-scale:hover {
-    transform: scale(1.05);
-}
-
-/* ===========================
-   Spacing Utilities
-   =========================== */
-.section-spacing {
-    padding-top: 6rem;
-    padding-bottom: 6rem;
-}
-
-@media (min-width: 768px) {
-    .section-spacing {
-        padding-top: 8rem;
-        padding-bottom: 8rem;
-    }
-}
-
-/* ===========================
-   Container
-   =========================== */
-.container {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .container {
-        max-width: 640px;
-    }
-}
-
-@media (min-width: 768px) {
-    .container {
-        max-width: 768px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .container {
-        max-width: 1024px;
-    }
-}
-
-@media (min-width: 1280px) {
-    .container {
-        max-width: 1280px;
-    }
-}
-
-@media (min-width: 1536px) {
-    .container {
-        max-width: 1536px;
+    #header nav.left a:hover {
+        background: rgba(246, 117, 94, 0.2);
     }
 }
