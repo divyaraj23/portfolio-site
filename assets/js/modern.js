@@ -31,8 +31,14 @@
 
         init() {
             // Check saved preference or system preference
-            const savedMode = localStorage.getItem('darkMode');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const mql = window.matchMedia('(prefers-color-scheme: dark)');
+            const prefersDark = mql.matches;
+            let savedMode = null;
+            try {
+                savedMode = localStorage.getItem('darkMode');
+            } catch (_) {
+                savedMode = null;
+            }
 
             if (savedMode === 'dark' || (!savedMode && prefersDark)) {
                 this.enable();
@@ -44,11 +50,24 @@
             }
 
             // Listen for system preference changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (!localStorage.getItem('darkMode')) {
+            const onChange = (e) => {
+                let stored = null;
+                try {
+                    stored = localStorage.getItem('darkMode');
+                } catch (_) {
+                    stored = null;
+                }
+                // Only auto-follow system if user hasn't explicitly picked a mode.
+                if (!stored) {
                     e.matches ? this.enable() : this.disable();
                 }
-            });
+            };
+            if (typeof mql.addEventListener === 'function') {
+                mql.addEventListener('change', onChange);
+            } else if (typeof mql.addListener === 'function') {
+                // Safari < 14
+                mql.addListener(onChange);
+            }
         }
 
         toggle() {
@@ -57,12 +76,20 @@
 
         enable() {
             this.html.classList.add('dark');
-            localStorage.setItem('darkMode', 'dark');
+            try {
+                localStorage.setItem('darkMode', 'dark');
+            } catch (_) {
+                // Ignore storage errors (private mode / blocked storage)
+            }
         }
 
         disable() {
             this.html.classList.remove('dark');
-            localStorage.setItem('darkMode', 'light');
+            try {
+                localStorage.setItem('darkMode', 'light');
+            } catch (_) {
+                // Ignore storage errors (private mode / blocked storage)
+            }
         }
     }
 
@@ -387,7 +414,11 @@
 
             this.elements.forEach(({ element, speed }) => {
                 const yPos = -(scrolled * speed);
-                element.style.transform = `translate(${element.style.transform.match(/translate\(([^,]+)/)?.[1] || '0'}, ${yPos}px)`;
+                // Use the `translate` property so we don't clobber CSS animations that use `transform`.
+                // If unsupported, skip parallax rather than risking breaking the hero animation.
+                if ('translate' in element.style) {
+                    element.style.translate = `0px ${yPos}px`;
+                }
             });
         }
     }
