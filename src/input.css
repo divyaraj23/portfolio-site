@@ -8,7 +8,7 @@
   --color-secondary: #25a2c3;
   --color-dark: #727a82;
 
-  --font-heading: 'Montserrat', sans-serif;
-  --font-body: 'Open Sans', sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', monospace;
   --font-script: 'Pacifico', cursive;
 }
