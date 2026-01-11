@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@source "../*.html";
+@source "../assets/js/**/*.js";
+
+@theme {
+  --color-primary: #f6755e;
+  --color-secondary: #25a2c3;
+  --color-dark: #727a82;
+
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+  --font-script: 'Pacifico', cursive;
+}
