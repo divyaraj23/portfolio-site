@@ -9,8 +9,8 @@ module.exports = {
         dark: '#727a82'
       },
       fontFamily: {
-        'heading': ['Montserrat', 'sans-serif'],
-        'body': ['Open Sans', 'sans-serif'],
+        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        'mono': ['JetBrains Mono', 'Menlo', 'Monaco', 'monospace'],
         'script': ['Pacifico', 'cursive']
       }
     }
