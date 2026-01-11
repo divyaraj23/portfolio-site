@@ -1,14 +1,15 @@
 {
   "name": "portfolio-site",
-  "version": "1.0.0",
-  "description": "Personal portfolio website for Divyaraj Singh Sisodia",
+  "version": "2.0.0",
+  "description": "Modern portfolio website for Divyaraj Singh Sisodia - Engineering Manager at JumpCloud",
   "main": "index.html",
   "scripts": {
-    "start": "npm run build:css && npx serve .",
+    "start": "npm run build:css && npx serve . -l 3000",
     "build": "npm run build:css",
     "build:css": "npx tailwindcss -i ./src/input.css -o ./assets/css/tailwind.css --minify",
     "watch:css": "npx tailwindcss -i ./src/input.css -o ./assets/css/tailwind.css --watch",
-    "dev": "npm run watch:css & npx serve ."
+    "dev": "npm run watch:css & npx serve . -l 3000",
+    "clean": "rm -rf assets/css/tailwind.css"
   },
   "keywords": [
     "portfolio",
