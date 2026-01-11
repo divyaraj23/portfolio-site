@@ -1,21 +1,11 @@
 /**
- * Modern Portfolio Site - Vanilla JavaScript
- * Apple-like smooth animations and interactions
- * Zero dependencies - Pure ES6+
+ * Ultra-Modern Portfolio - Advanced JavaScript
+ * Features: Dark Mode, Skill Bars, Counters, Scroll Reveal, Smooth Navigation
+ * Zero Dependencies - Pure Vanilla JS
  */
 
 (function() {
     'use strict';
-
-    // ===========================
-    // Configuration
-    // ===========================
-    const CONFIG = {
-        menuDelay: 500,
-        scrollOffset: 80,
-        observerThreshold: 0.1,
-        animationDuration: 600
-    };
 
     // ===========================
     // Utility Functions
@@ -25,44 +15,118 @@
 
     const ease = {
         inOutCubic: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+        outQuart: t => 1 - Math.pow(1 - t, 4),
         outExpo: t => t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
     };
 
     // ===========================
-    // Page Load Animation
+    // Dark Mode
     // ===========================
-    class PageLoader {
+    class DarkMode {
         constructor() {
-            this.body = document.body;
+            this.html = document.documentElement;
+            this.toggleButton = $('#darkModeToggle');
             this.init();
         }
 
         init() {
-            this.body.classList.add('is-loading');
+            // Check saved preference or system preference
+            const savedMode = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-            // Remove loading state with smooth transition
-            window.addEventListener('load', () => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        this.body.classList.remove('is-loading');
-                        this.animateHero();
-                    }, 100);
-                });
+            if (savedMode === 'dark' || (!savedMode && prefersDark)) {
+                this.enable();
+            }
+
+            // Toggle button event
+            if (this.toggleButton) {
+                this.toggleButton.addEventListener('click', () => this.toggle());
+            }
+
+            // Listen for system preference changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('darkMode')) {
+                    e.matches ? this.enable() : this.disable();
+                }
             });
         }
 
-        animateHero() {
-            const hero = $('section');
-            if (hero) {
-                hero.style.opacity = '0';
-                hero.style.transform = 'translateY(20px)';
+        toggle() {
+            this.html.classList.contains('dark') ? this.disable() : this.enable();
+        }
 
-                requestAnimationFrame(() => {
-                    hero.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-                    hero.style.opacity = '1';
-                    hero.style.transform = 'translateY(0)';
-                });
+        enable() {
+            this.html.classList.add('dark');
+            localStorage.setItem('darkMode', 'dark');
+        }
+
+        disable() {
+            this.html.classList.remove('dark');
+            localStorage.setItem('darkMode', 'light');
+        }
+    }
+
+    // ===========================
+    // Mobile Menu
+    // ===========================
+    class MobileMenu {
+        constructor() {
+            this.menu = $('#mobileMenu');
+            this.overlay = $('#menuOverlay');
+            this.toggleButton = $('#menuToggle');
+            this.closeButton = $('#menuClose');
+            this.menuLinks = $$('#mobileMenu a');
+            this.isOpen = false;
+            this.init();
+        }
+
+        init() {
+            if (!this.menu) return;
+
+            // Toggle button
+            if (this.toggleButton) {
+                this.toggleButton.addEventListener('click', () => this.toggle());
             }
+
+            // Close button
+            if (this.closeButton) {
+                this.closeButton.addEventListener('click', () => this.close());
+            }
+
+            // Overlay click
+            if (this.overlay) {
+                this.overlay.addEventListener('click', () => this.close());
+            }
+
+            // Menu links
+            this.menuLinks.forEach(link => {
+                link.addEventListener('click', () => this.close());
+            });
+
+            // Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.isOpen) {
+                    this.close();
+                }
+            });
+        }
+
+        toggle() {
+            this.isOpen ? this.close() : this.open();
+        }
+
+        open() {
+            this.isOpen = true;
+            this.menu.classList.remove('translate-x-full');
+            this.overlay.classList.remove('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = 'hidden';
+        }
+
+        close() {
+            this.isOpen = false;
+            this.menu.classList.add('translate-x-full');
+            this.overlay.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = '';
         }
     }
 
@@ -78,17 +142,12 @@
             $$('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', (e) => {
                     const href = anchor.getAttribute('href');
-                    if (href === '#menu') return; // Skip menu toggle
+                    if (!href || href === '#') return;
 
-                    e.preventDefault();
                     const target = $(href);
-
                     if (target) {
+                        e.preventDefault();
                         this.scrollTo(target);
-                        // Close menu if open
-                        if (document.body.classList.contains('is-menu-visible')) {
-                            Menu.instance.close();
-                        }
                     }
                 });
             });
@@ -96,11 +155,11 @@
 
         scrollTo(target) {
             const header = $('#header');
-            const headerHeight = header ? header.offsetHeight : CONFIG.scrollOffset;
+            const headerHeight = header ? header.offsetHeight : 80;
             const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
             const startPosition = window.pageYOffset;
             const distance = targetPosition - startPosition;
-            const duration = CONFIG.animationDuration;
+            const duration = 800;
             let start = null;
 
             const animation = (currentTime) => {
@@ -120,153 +179,7 @@
     }
 
     // ===========================
-    // Mobile Menu
-    // ===========================
-    class Menu {
-        static instance = null;
-
-        constructor() {
-            if (Menu.instance) return Menu.instance;
-
-            this.menu = $('#menu');
-            this.body = document.body;
-            this.isVisible = false;
-            this.closeButton = null;
-
-            this.init();
-            Menu.instance = this;
-        }
-
-        init() {
-            if (!this.menu) return;
-
-            // Create close button
-            this.closeButton = document.createElement('a');
-            this.closeButton.href = '#menu';
-            this.closeButton.className = 'close';
-            this.closeButton.setAttribute('aria-label', 'Close menu');
-
-            // SVG close icon
-            this.closeButton.innerHTML = `
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            `;
-
-            this.menu.appendChild(this.closeButton);
-            this.body.appendChild(this.menu);
-
-            // Toggle button
-            const toggleButton = $('a[href="#menu"]', $('#header'));
-            if (toggleButton) {
-                // Add hamburger icon
-                toggleButton.innerHTML = `
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                    <span>Menu</span>
-                `;
-
-                toggleButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.toggle();
-                });
-            }
-
-            // Close button
-            this.closeButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.close();
-            });
-
-            // Click outside to close
-            document.addEventListener('click', (e) => {
-                if (this.isVisible && !this.menu.contains(e.target) && !e.target.closest('a[href="#menu"]')) {
-                    this.close();
-                }
-            });
-
-            // Menu links
-            $$('a', this.menu).forEach(link => {
-                if (link !== this.closeButton) {
-                    link.addEventListener('click', () => {
-                        setTimeout(() => this.close(), CONFIG.menuDelay);
-                    });
-                }
-            });
-
-            // Escape key to close
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && this.isVisible) {
-                    this.close();
-                }
-            });
-
-            // Touch swipe to close
-            this.initSwipeGesture();
-        }
-
-        toggle() {
-            this.isVisible ? this.close() : this.open();
-        }
-
-        open() {
-            this.isVisible = true;
-            this.body.classList.add('is-menu-visible');
-
-            // Prevent scroll
-            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-            this.body.style.overflow = 'hidden';
-            this.body.style.paddingRight = `${scrollbarWidth}px`;
-
-            // Animate menu items
-            requestAnimationFrame(() => {
-                $$('li', this.menu).forEach((item, index) => {
-                    item.style.opacity = '0';
-                    item.style.transform = 'translateX(20px)';
-
-                    setTimeout(() => {
-                        item.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-                        item.style.opacity = '1';
-                        item.style.transform = 'translateX(0)';
-                    }, index * 50);
-                });
-            });
-        }
-
-        close() {
-            this.isVisible = false;
-            this.body.classList.remove('is-menu-visible');
-
-            // Restore scroll
-            this.body.style.overflow = '';
-            this.body.style.paddingRight = '';
-        }
-
-        initSwipeGesture() {
-            let touchStartX = 0;
-            let touchEndX = 0;
-
-            this.menu.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
-
-            this.menu.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                if (touchEndX > touchStartX + 50) {
-                    this.close();
-                }
-            }, { passive: true });
-        }
-    }
-
-    // ===========================
-    // Scroll Reveal Animation
+    // Scroll Reveal
     // ===========================
     class ScrollReveal {
         constructor() {
@@ -282,94 +195,84 @@
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('revealed');
+                            // Trigger skill bar animation if it's a skill bar
+                            if (entry.target.classList.contains('skill-bar')) {
+                                this.animateSkillBar(entry.target);
+                            }
+                            // Trigger counter animation if it has data-counter
+                            if (entry.target.hasAttribute('data-counter')) {
+                                this.animateCounter(entry.target);
+                            }
                             this.observer.unobserve(entry.target);
                         }
                     });
                 },
                 {
-                    threshold: CONFIG.observerThreshold,
+                    threshold: 0.1,
                     rootMargin: '0px 0px -50px 0px'
                 }
             );
 
-            // Observe elements
-            const elements = $$('.group, section > div, footer > div');
-            elements.forEach(el => {
-                el.classList.add('reveal');
+            // Observe reveal elements
+            $$('.reveal').forEach(el => {
+                this.observer.observe(el);
+            });
+
+            // Observe skill bars
+            $$('.skill-bar').forEach(el => {
+                this.observer.observe(el);
+            });
+
+            // Observe counters
+            $$('[data-counter]').forEach(el => {
                 this.observer.observe(el);
             });
         }
-    }
 
-    // ===========================
-    // Parallax Effect
-    // ===========================
-    class ParallaxScroll {
-        constructor() {
-            this.elements = [];
-            this.ticking = false;
-            this.init();
-        }
+        animateSkillBar(element) {
+            const skillLevel = parseInt(element.getAttribute('data-skill') || 0);
+            const fillElement = element.querySelector('.skill-fill');
+            const percentElement = element.querySelector('.skill-percent');
 
-        init() {
-            // Select parallax elements
-            const hero = $('section.relative.min-h-screen');
-            if (hero) {
-                this.elements.push({
-                    element: hero.querySelector('.absolute.inset-0'),
-                    speed: 0.5
-                });
-            }
+            if (!fillElement || !percentElement) return;
 
-            if (this.elements.length > 0) {
-                window.addEventListener('scroll', () => this.onScroll(), { passive: true });
-            }
-        }
+            let currentPercent = 0;
+            const duration = 1500;
+            const increment = skillLevel / (duration / 16);
 
-        onScroll() {
-            if (!this.ticking) {
-                requestAnimationFrame(() => {
-                    this.update();
-                    this.ticking = false;
-                });
-                this.ticking = true;
-            }
-        }
-
-        update() {
-            const scrolled = window.pageYOffset;
-
-            this.elements.forEach(({ element, speed }) => {
-                if (element) {
-                    const yPos = -(scrolled * speed);
-                    element.style.transform = `translateY(${yPos}px)`;
+            const animate = () => {
+                currentPercent += increment;
+                if (currentPercent >= skillLevel) {
+                    currentPercent = skillLevel;
+                    fillElement.style.width = `${skillLevel}%`;
+                    percentElement.textContent = `${skillLevel}%`;
+                } else {
+                    fillElement.style.width = `${currentPercent}%`;
+                    percentElement.textContent = `${Math.floor(currentPercent)}%`;
+                    requestAnimationFrame(animate);
                 }
-            });
-        }
-    }
+            };
 
-    // ===========================
-    // Floating Animation for Cards
-    // ===========================
-    class FloatingCards {
-        constructor() {
-            this.init();
+            setTimeout(() => animate(), 100);
         }
 
-        init() {
-            $$('.group').forEach((card, index) => {
-                // Stagger the animation
-                card.style.animationDelay = `${index * 0.1}s`;
+        animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-counter'));
+            const duration = 2000;
+            const increment = target / (duration / 16);
+            let current = 0;
 
-                // Add subtle floating effect on hover
-                card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-8px) scale(1.02)';
-                });
+            const animate = () => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + (element.textContent.includes('+') ? '+' : '');
+                } else {
+                    element.textContent = Math.floor(current);
+                    requestAnimationFrame(animate);
+                }
+            };
 
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = '';
-                });
-            });
+            setTimeout(() => animate(), 200);
         }
     }
 
@@ -402,17 +305,11 @@
         update() {
             const currentScroll = window.pageYOffset;
 
-            if (currentScroll > 100) {
-                this.header.classList.add('scrolled');
+            // Add shadow on scroll
+            if (currentScroll > 50) {
+                this.header.classList.add('backdrop-blur', 'bg-white/80', 'dark:bg-slate-900/80', 'shadow-md');
             } else {
-                this.header.classList.remove('scrolled');
-            }
-
-            // Hide/show header on scroll
-            if (currentScroll > this.lastScroll && currentScroll > 300) {
-                this.header.style.transform = 'translateY(-100%)';
-            } else {
-                this.header.style.transform = 'translateY(0)';
+                this.header.classList.remove('backdrop-blur', 'bg-white/80', 'dark:bg-slate-900/80', 'shadow-md');
             }
 
             this.lastScroll = currentScroll;
@@ -420,9 +317,85 @@
     }
 
     // ===========================
-    // Performance Optimization
+    // Page Transitions
     // ===========================
-    class PerformanceOptimizer {
+    class PageTransitions {
+        constructor() {
+            this.init();
+        }
+
+        init() {
+            // Add entrance animation
+            document.body.classList.add('page-loaded');
+
+            // Smooth transitions for internal navigation
+            $$('a:not([target="_blank"])').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href');
+                    if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+                        e.preventDefault();
+                        document.body.classList.add('page-exit');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 300);
+                    }
+                });
+            });
+        }
+    }
+
+    // ===========================
+    // Parallax Background
+    // ===========================
+    class ParallaxBackground {
+        constructor() {
+            this.elements = [];
+            this.ticking = false;
+            this.init();
+        }
+
+        init() {
+            // Find parallax elements
+            const hero = $('#hero');
+            if (hero) {
+                const blobs = $$('.animate-blob', hero);
+                blobs.forEach((blob, index) => {
+                    this.elements.push({
+                        element: blob,
+                        speed: 0.1 + (index * 0.05)
+                    });
+                });
+            }
+
+            if (this.elements.length > 0) {
+                window.addEventListener('scroll', () => this.onScroll(), { passive: true });
+            }
+        }
+
+        onScroll() {
+            if (!this.ticking) {
+                requestAnimationFrame(() => {
+                    this.update();
+                    this.ticking = false;
+                });
+                this.ticking = true;
+            }
+        }
+
+        update() {
+            const scrolled = window.pageYOffset;
+
+            this.elements.forEach(({ element, speed }) => {
+                const yPos = -(scrolled * speed);
+                element.style.transform = `translate(${element.style.transform.match(/translate\(([^,]+)/)?.[1] || '0'}, ${yPos}px)`;
+            });
+        }
+    }
+
+    // ===========================
+    // Performance Observer
+    // ===========================
+    class PerformanceMonitor {
         constructor() {
             this.init();
         }
@@ -430,31 +403,76 @@
         init() {
             // Lazy load images
             if ('loading' in HTMLImageElement.prototype) {
-                // Browser supports native lazy loading
                 $$('img[loading="lazy"]').forEach(img => {
                     img.loading = 'lazy';
                 });
-            } else {
-                // Fallback for older browsers
-                this.lazyLoadImages();
+            }
+
+            // Log performance metrics in development
+            if (window.location.hostname === 'localhost') {
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        const perfData = window.performance.timing;
+                        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+                        console.log(`⚡ Page loaded in ${pageLoadTime}ms`);
+                    }, 0);
+                });
             }
         }
+    }
 
-        lazyLoadImages() {
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                            img.removeAttribute('data-src');
-                        }
-                        imageObserver.unobserve(img);
-                    }
+    // ===========================
+    // Floating Cards
+    // ===========================
+    class FloatingCards {
+        constructor() {
+            this.init();
+        }
+
+        init() {
+            $$('.group').forEach((card) => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
                 });
             });
+        }
+    }
 
-            $$('img[data-src]').forEach(img => imageObserver.observe(img));
+    // ===========================
+    // Easter Egg - Konami Code
+    // ===========================
+    class KonamiCode {
+        constructor() {
+            this.pattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+            this.current = 0;
+            this.init();
+        }
+
+        init() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === this.pattern[this.current]) {
+                    this.current++;
+                    if (this.current === this.pattern.length) {
+                        this.activate();
+                        this.current = 0;
+                    }
+                } else {
+                    this.current = 0;
+                }
+            });
+        }
+
+        activate() {
+            // Add fun confetti or animation
+            console.log('🎉 Konami Code activated!');
+            document.body.style.animation = 'rainbow 2s linear infinite';
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 3000);
         }
     }
 
@@ -462,7 +480,6 @@
     // Initialize Everything
     // ===========================
     function init() {
-        // Check if DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeApp);
         } else {
@@ -472,16 +489,20 @@
 
     function initializeApp() {
         // Initialize all modules
-        new PageLoader();
+        new DarkMode();
+        new MobileMenu();
         new SmoothScroll();
-        new Menu();
         new ScrollReveal();
-        new ParallaxScroll();
-        new FloatingCards();
         new HeaderScroll();
-        new PerformanceOptimizer();
+        new PageTransitions();
+        new ParallaxBackground();
+        new FloatingCards();
+        new PerformanceMonitor();
+        new KonamiCode();
 
-        console.log('✨ Portfolio site initialized with modern UX');
+        console.log('🚀 Ultra-modern portfolio initialized!');
+        console.log('💡 Features: Dark Mode, Skill Bars, Animated Counters, Scroll Reveal');
+        console.log('⚡ Zero dependencies | Pure Vanilla JS | 60fps animations');
     }
 
     // Start the app
