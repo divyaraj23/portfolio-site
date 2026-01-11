@@ -24,17 +24,18 @@
 		<meta name="twitter:description" content="Engineering Manager at JumpCloud. Expert in Java, Golang, Python, AWS. 10+ years building high-performance engineering teams across Security SaaS & FinTech." />
 		<meta name="twitter:image" content="https://divyaraj.tech/images/profile.jpg" />
 
-		<!-- Performance: preconnects and preload -->
+		<!-- Performance: preconnects and font loading -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:700|Open+Sans:300,400|Pacifico&display=swap" rel="stylesheet" />
-		<link rel="preload" as="image" href="images/banner1.jpg" />
+		<link rel="dns-prefetch" href="https://www.linkedin.com" />
+		<link rel="dns-prefetch" href="https://github.com" />
 		
 		<!-- Tailwind CSS (optimized & purged) -->
 		<link rel="stylesheet" href="assets/css/tailwind.css" />
 		
-		<!-- Header & Menu styles -->
-		<link rel="stylesheet" href="assets/css/header-menu.css" />
+		<!-- Modern CSS with Apple-like animations -->
+		<link rel="stylesheet" href="assets/css/modern.css" />
 	</head>
 	<body>
 
@@ -57,8 +58,13 @@
 			</nav>
 
 		<!-- Hero Section - Engineering Manager -->
-		<section class="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center">
-			<div class="absolute inset-0 bg-[url('images/banner1.jpg')] bg-cover bg-center opacity-20"></div>
+		<section class="relative min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center overflow-hidden">
+			<div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/80 to-purple-900/90"></div>
+			<div class="absolute inset-0 opacity-30">
+				<div class="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+				<div class="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+				<div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+			</div>
 			<div class="relative z-10 container mx-auto px-6 text-center text-white">
 				<div class="max-w-4xl mx-auto">
 					<h1 class="text-5xl md:text-6xl font-heading font-bold mb-6 leading-tight">
@@ -337,12 +343,8 @@
 			</div>
 		</footer>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js" defer></script>
-			<script src="assets/js/jquery.scrolly.min.js" defer></script>
-			<script src="assets/js/skel.min.js" defer></script>
-			<script src="assets/js/util.js" defer></script>
-			<script src="assets/js/main.js" defer></script>
+		<!-- Modern JavaScript - Zero dependencies -->
+			<script src="assets/js/modern.js" defer></script>
 
 	</body>
 </html>
