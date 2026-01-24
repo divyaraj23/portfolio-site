@@ -24,6 +24,7 @@ body {
   background: radial-gradient(circle at top, #1e293b, var(--bg));
   color: var(--text);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 a {
@@ -43,12 +44,29 @@ img {
 }
 
 .site-header {
+  width: 100%;
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(11, 17, 32, 0.75);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  margin-bottom: 24px;
+}
+
+main {
+  scroll-padding-top: 96px;
+}
+
+.site-header__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0 40px;
 }
-
 .logo {
   font-family: "Sora", sans-serif;
   font-weight: 700;
@@ -155,22 +173,6 @@ img {
   transform: translateY(-2px);
 }
 
-.hero__meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.hero__meta strong {
-  font-size: 1.4rem;
-  display: block;
-}
-
-.hero__meta span {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
 
 .hero__visual {
   display: grid;
@@ -186,6 +188,12 @@ img {
   background: var(--card);
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
+}
+
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hero__card {
@@ -214,6 +222,7 @@ img {
 
 .section {
   padding: 72px 0;
+  scroll-margin-top: 96px;
 }
 
 .section--light {
@@ -327,57 +336,9 @@ img {
   gap: 8px;
 }
 
-.about__profile {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 32px;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.about__cards {
-  display: grid;
-  gap: 20px;
-}
-
-.about__portrait {
-  display: flex;
-  justify-content: center;
-}
-
-.portrait--stat {
-  position: relative;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
-  max-width: 300px;
-}
-
-.portrait--stat img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.portrait__badge {
-  position: absolute;
-  right: -16px;
-  bottom: -16px;
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #f97316, #ef4444);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 1.2rem;
-  box-shadow: 0 16px 32px rgba(239, 68, 68, 0.35);
-}
-
 .about__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -498,8 +459,9 @@ img {
     padding: 56px 24px;
   }
 
-  .about__profile {
+  .about__grid {
     grid-template-columns: 1fr;
   }
+
 }
 
