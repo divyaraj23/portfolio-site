@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import About from "../components/About.astro";
+---
+
+<BaseLayout
+  title="Divyaraj Singh Sisodia | Engineering Manager"
+  description="Engineering Manager with 10+ years across Security SaaS and FinTech, building secure systems and high-performing teams."
+>
+  <div class="page">
+    <header class="site-header">
+      <div class="logo">Divyaraj</div>
+      <nav>
+        <a href="#about">About</a>
+        <a href="mailto:sisodia.divyarajsingh@gmail.com">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <Hero />
+      <About />
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 divyaraj.tech · Engineering Manager · Security & FinTech</p>
+    </footer>
+  </div>
+</BaseLayout>
+

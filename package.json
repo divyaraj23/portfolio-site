@@ -1,24 +1,15 @@
 {
   "name": "portfolio-site",
   "version": "2.0.0",
-  "description": "Modern portfolio website for Divyaraj Singh Sisodia - Engineering Manager at JumpCloud",
-  "main": "index.html",
+  "description": "Astro-based portfolio website for Divyaraj Singh Sisodia",
+  "type": "module",
   "scripts": {
-    "start": "npm run build:css && npx serve . -l 3000",
-    "build": "npm run build:css",
-    "build:css": "npx tailwindcss -i ./src/input.css -o ./assets/css/tailwind.css --minify",
-    "watch:css": "npx tailwindcss -i ./src/input.css -o ./assets/css/tailwind.css --watch",
-    "dev": "npm run watch:css & npx serve . -l 3000",
-    "clean": "rm -rf assets/css/tailwind.css"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "powershell ./deploy.ps1"
   },
-  "keywords": [
-    "portfolio",
-    "website",
-    "static",
-    "html",
-    "css",
-    "javascript"
-  ],
+  "keywords": ["portfolio", "website", "astro", "modern", "html", "css", "javascript"],
   "author": "Divyaraj Singh Sisodia",
   "license": "MIT",
   "repository": {
@@ -30,10 +21,6 @@
   },
   "homepage": "https://divyaraj.tech",
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.18",
-    "autoprefixer": "^10.4.23",
-    "postcss": "^8.5.6",
-    "serve": "^14.2.0",
-    "tailwindcss": "^4.1.18"
+    "astro": "^4.15.0"
   }
 }
