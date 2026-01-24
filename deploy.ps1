@@ -22,4 +22,4 @@ Write-Host "⬆️ Pushing to GitHub..." -ForegroundColor Yellow
 git push origin main
 
 Write-Host "✅ Deployment complete!" -ForegroundColor Green
-Write-Host "🌐 Your site will be live at your configured hosting platform (Netlify/Vercel/GitHub Pages)" -ForegroundColor Cyan
+Write-Host "🌐 Netlify will build from main (build: npm run build, publish: dist)" -ForegroundColor Cyan
