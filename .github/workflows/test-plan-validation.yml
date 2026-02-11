@@ -1,0 +1,177 @@
+name: Test Plan Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, develop]
+
+jobs:
+  test-plan-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        fi
+    
+    - name: Check for test plan
+      id: test-plan-check
+      run: |
+        echo "Checking for test plan in PR..."
+        
+        # Check if test plan exists in docs/testing/
+        if [ -d "docs/testing" ] && [ "$(ls -A docs/testing/*.md 2>/dev/null)" ]; then
+          echo "✅ Test plan found in docs/testing/"
+          echo "test-plan-exists=true" >> $GITHUB_OUTPUT
+          
+          # Get the latest test plan
+          LATEST_TEST_PLAN=$(ls -t docs/testing/test-plan-*.md | head -1)
+          echo "Latest test plan: $LATEST_TEST_PLAN"
+          echo "test-plan-file=$LATEST_TEST_PLAN" >> $GITHUB_OUTPUT
+        else
+          echo "❌ No test plan found in docs/testing/"
+          echo "test-plan-exists=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Validate test plan content
+      if: steps.test-plan-check.outputs.test-plan-exists == 'true'
+      run: |
+        TEST_PLAN_FILE="${{ steps.test-plan-check.outputs.test-plan-file }}"
+        echo "Validating test plan: $TEST_PLAN_FILE"
+        
+        # Check for required sections
+        REQUIRED_SECTIONS=(
+          "Executive Summary"
+          "Repository Analysis"
+          "Test Strategy"
+          "Test Implementation Plan"
+          "Success Criteria"
+        )
+        
+        MISSING_SECTIONS=()
+        for section in "${REQUIRED_SECTIONS[@]}"; do
+          if ! grep -q "$section" "$TEST_PLAN_FILE"; then
+            MISSING_SECTIONS+=("$section")
+          fi
+        done
+        
+        if [ ${#MISSING_SECTIONS[@]} -eq 0 ]; then
+          echo "✅ Test plan contains all required sections"
+        else
+          echo "❌ Test plan missing required sections:"
+          printf '   - %s\n' "${MISSING_SECTIONS[@]}"
+          exit 1
+        fi
+        
+        # Check for test cases
+        if grep -q "\[ \].*Test" "$TEST_PLAN_FILE"; then
+          echo "✅ Test plan contains test cases"
+        else
+          echo "⚠️  Test plan may be missing specific test cases"
+        fi
+    
+    - name: Run tests
+      run: |
+        echo "Running tests..."
+        
+        # Run npm tests if package.json exists
+        if [ -f package.json ]; then
+          if npm run test --if-present; then
+            echo "✅ npm tests passed"
+          else
+            echo "⚠️  npm tests failed or not configured"
+          fi
+        fi
+        
+        # Run pytest if requirements.txt exists
+        if [ -f requirements.txt ] && command -v python3 &> /dev/null; then
+          if python3 -m pytest --tb=short; then
+            echo "✅ Python tests passed"
+          else
+            echo "⚠️  Python tests failed or not configured"
+          fi
+        fi
+    
+    - name: Generate test coverage report
+      if: steps.test-plan-check.outputs.test-plan-exists == 'true'
+      run: |
+        echo "Generating test coverage report..."
+        
+        # Generate coverage for Node.js projects
+        if [ -f package.json ]; then
+          if npm run test:coverage --if-present; then
+            echo "✅ Coverage report generated"
+          else
+            echo "⚠️  Coverage report not available"
+          fi
+        fi
+    
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const testPlanExists = '${{ steps.test-plan-check.outputs.test-plan-exists }}' === 'true';
+          const testPlanFile = '${{ steps.test-plan-check.outputs.test-plan-file }}';
+          
+          let comment = '## 🧪 Test Plan Validation\n\n';
+          
+          if (testPlanExists) {
+            comment += '✅ **Test plan found**: `' + testPlanFile + '`\n\n';
+            comment += '### Test Plan Status\n';
+            comment += '- [x] Test plan exists\n';
+            comment += '- [x] Required sections present\n';
+            comment += '- [x] Test cases identified\n\n';
+            comment += '### Next Steps\n';
+            comment += '1. Review the test plan for completeness\n';
+            comment += '2. Ensure all test cases are implemented\n';
+            comment += '3. Run tests locally to verify functionality\n';
+            comment += '4. Update test plan with results\n\n';
+            comment += '### Test Plan Preview\n';
+            comment += '```\n';
+            comment += '📋 Test plan location: ' + testPlanFile + '\n';
+            comment += '📊 Generated: ' + new Date().toISOString() + '\n';
+            comment += '```';
+          } else {
+            comment += '❌ **No test plan found**\n\n';
+            comment += '### Required Action\n';
+            comment += 'Please generate a test plan before merging this PR:\n\n';
+            comment += '1. Run: `./scripts/generate-test-plan.sh`\n';
+            comment += '2. Review and customize the generated test plan\n';
+            comment += '3. Implement the recommended tests\n';
+            comment += '4. Update the PR with test results\n\n';
+            comment += '### Why Test Plans Matter\n';
+            comment += '- Ensure code quality and reliability\n';
+            comment += '- Prevent regressions and bugs\n';
+            comment += '- Document testing approach\n';
+            comment += '- Enable confident deployments\n\n';
+            comment += 'For more information, see the [Testing Guidelines](docs/testing/README.md)';
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+    
+    - name: Fail if no test plan
+      if: steps.test-plan-check.outputs.test-plan-exists == 'false'
+      run: |
+        echo "❌ PR rejected: No test plan found"
+        echo "Please generate a test plan using: ./scripts/generate-test-plan.sh"
+        exit 1

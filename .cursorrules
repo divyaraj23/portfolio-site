@@ -1,0 +1,159 @@
+# Cursor Team Instructions - Automated Test Plan Generation
+
+## 🎯 **AUTOMATIC TEST PLAN GENERATION**
+
+When working on any repository, ALWAYS generate a comprehensive test plan before making significant changes or creating PRs. Follow this systematic approach:
+
+### **MANDATORY TEST PLAN GENERATION**
+
+Before any major development work, feature implementation, or PR creation, you MUST:
+
+1. **Analyze the entire repository structure**
+2. **Generate a comprehensive test plan** using the standardized template below
+3. **Create test cases** for all modified/new functionality
+4. **Validate test coverage** meets team standards
+
+### **TEST PLAN GENERATION PROMPT**
+
+Use this exact prompt for ALL test plan generation:
+
+```
+ANALYZE THIS REPOSITORY AND GENERATE A COMPREHENSIVE TEST PLAN
+
+Follow this systematic approach:
+
+## 1. REPOSITORY ANALYSIS
+- **Project Type**: [Identify: web app, API, mobile, library, etc.]
+- **Tech Stack**: [List all technologies, frameworks, dependencies]
+- **Architecture**: [Describe overall structure and key components]
+- **Entry Points**: [Main routes, functions, user flows]
+- **Dependencies**: [External services, APIs, databases]
+
+## 2. TEST STRATEGY (Organize by Priority)
+
+### A. CRITICAL TESTS (Must Pass)
+- **Core Functionality**: [Essential features that must work]
+- **Security**: [Authentication, authorization, data protection]
+- **Performance**: [Response times, load handling, resource usage]
+- **Data Integrity**: [Database operations, data validation]
+
+### B. IMPORTANT TESTS (Should Pass)
+- **Integration**: [Component interactions, API endpoints]
+- **User Experience**: [UI/UX flows, error handling]
+- **Compatibility**: [Cross-browser, cross-device, cross-platform]
+- **Accessibility**: [WCAG compliance, screen readers]
+
+### C. NICE-TO-HAVE TESTS (Could Pass)
+- **Edge Cases**: [Boundary conditions, error scenarios]
+- **Performance Optimization**: [Caching, compression, CDN]
+- **Monitoring**: [Logging, metrics, alerting]
+
+## 3. TEST IMPLEMENTATION PLAN
+
+For each test category, provide:
+- **Specific Test Cases**: [Step-by-step test scenarios]
+- **Test Data Requirements**: [Mock data, fixtures, test accounts]
+- **Tools & Frameworks**: [Recommended testing tools for this tech stack]
+- **Automation Strategy**: [What to automate vs manual testing]
+- **Success Criteria**: [Pass/fail conditions, performance benchmarks]
+
+## 4. EXECUTION ROADMAP
+- **Phase 1 (Immediate)**: [Critical tests - must be done first]
+- **Phase 2 (Short-term)**: [Important tests - within 1-2 sprints]
+- **Phase 3 (Medium-term)**: [Nice-to-have tests - future iterations]
+
+## 5. QUALITY GATES
+- **Coverage Target**: [Minimum test coverage percentage]
+- **Performance Benchmarks**: [Acceptable response times, load limits]
+- **Security Standards**: [OWASP compliance, vulnerability scanning]
+- **Release Criteria**: [What must pass before deployment]
+
+## 6. MAINTENANCE STRATEGY
+- **Test Updates**: [How to keep tests current with code changes]
+- **CI/CD Integration**: [Automated test execution in pipelines]
+- **Monitoring**: [Production monitoring and alerting]
+- **Documentation**: [Test documentation and reporting]
+
+## OUTPUT FORMAT
+Structure as:
+1. **Executive Summary** (2-3 paragraphs)
+2. **Detailed Test Plans** (organized by priority)
+3. **Implementation Timeline** (phases and deadlines)
+4. **Resource Requirements** (tools, time, team members)
+5. **Risk Assessment** (testing risks and mitigation strategies)
+
+Focus on ACTIONABLE, SPECIFIC test cases that can be immediately implemented.
+Prioritize based on BUSINESS IMPACT and TECHNICAL RISK.
+```
+
+## **AUTOMATION RULES**
+
+### **Before Creating PRs:**
+1. **Generate test plan** using the prompt above
+2. **Validate test coverage** for all modified code
+3. **Create test cases** for new features
+4. **Update existing tests** for modified functionality
+5. **Document test results** in PR description
+
+### **Before Major Commits:**
+1. **Run existing tests** to ensure no regressions
+2. **Add new tests** for new functionality
+3. **Update test documentation** if needed
+
+### **For New Repositories:**
+1. **Generate comprehensive test plan** on first analysis
+2. **Set up testing infrastructure** based on recommendations
+3. **Create initial test suite** covering critical functionality
+4. **Document testing standards** for the project
+
+## **TECHNOLOGY-SPECIFIC GUIDELINES**
+
+### **Frontend Projects (React, Vue, Angular, etc.)**
+- Component testing with Jest/Testing Library
+- E2E testing with Cypress/Playwright
+- Visual regression testing
+- Accessibility testing with axe-core
+
+### **Backend Projects (Node.js, Python, Java, etc.)**
+- Unit testing with framework-specific tools
+- API testing with Postman/Newman or similar
+- Integration testing with test databases
+- Load testing with Artillery/k6
+
+### **Mobile Projects (React Native, Flutter, etc.)**
+- Unit testing with framework tools
+- Widget/Component testing
+- Device testing on multiple platforms
+- Performance testing
+
+### **Infrastructure/DevOps**
+- Infrastructure as Code testing
+- Security scanning
+- Performance monitoring
+- Disaster recovery testing
+
+## **QUALITY STANDARDS**
+
+### **Minimum Requirements:**
+- **Test Coverage**: 80% for critical paths, 60% overall
+- **Performance**: < 3s page load, < 200ms API response
+- **Security**: No high/critical vulnerabilities
+- **Accessibility**: WCAG 2.1 AA compliance
+
+### **Documentation Requirements:**
+- Test plan document in `/docs/testing/`
+- Test case specifications
+- Test execution reports
+- Coverage reports
+
+## **INTEGRATION WITH GITHUB WORKFLOW**
+
+When using GitHub CLI or creating PRs:
+1. **Always include test plan** in PR description
+2. **Link to test documentation** in comments
+3. **Reference test coverage** in PR checks
+4. **Update test status** in project boards
+
+---
+
+**Remember**: Quality is not an accident. Every line of code should be tested, every feature should be validated, and every release should be confident.
