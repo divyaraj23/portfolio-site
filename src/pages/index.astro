@@ -109,10 +109,12 @@ import Contact from "../components/Contact.astro";
 
     // Subtle hero parallax
     const orbs = document.querySelectorAll<HTMLElement>("[data-parallax]");
+    const portrait = document.querySelector<HTMLElement>(".portrait-wrap");
     if (!reduce && orbs.length) {
       window.addEventListener("scroll", () => {
         const y = window.scrollY;
         if (y > window.innerHeight * 1.2) return;
+        portrait?.style.setProperty("--py2", `${y * -0.1}px`);
         orbs.forEach((o) => {
           o.style.setProperty("--py", `${y * parseFloat(o.dataset.parallax!)}px`);
         });
