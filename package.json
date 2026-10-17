@@ -1,0 +1,26 @@
+{
+  "name": "portfolio-site",
+  "version": "2.0.0",
+  "description": "Astro-based portfolio website for Divyaraj Singh Sisodia",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "powershell ./deploy.ps1"
+  },
+  "keywords": ["portfolio", "website", "astro", "modern", "html", "css", "javascript"],
+  "author": "Divyaraj Singh Sisodia",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/divyaraj23/portfolio-site.git"
+  },
+  "bugs": {
+    "url": "https://github.com/divyaraj23/portfolio-site/issues"
+  },
+  "homepage": "https://divyaraj.tech",
+  "devDependencies": {
+    "astro": "^4.15.0"
+  }
+}
