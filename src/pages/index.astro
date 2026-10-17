@@ -10,25 +10,113 @@ import Contact from "../components/Contact.astro";
   title="Divyaraj Singh Sisodia | Engineering Manager"
   description="Engineering Manager with 10+ years across Security SaaS and FinTech, building secure systems and high-performing teams."
 >
-  <div class="page">
-    <header class="site-header">
-      <div class="site-header__inner">
-        <div class="logo">Divyaraj</div>
-        <nav>
-          <a href="#about">About</a>
-          <a href="#experience">Experience</a>
-          <a href="#contact">Contact</a>
-        </nav>
-      </div>
-    </header>
+  <header class="site-header" id="site-header">
+    <div class="container site-header__inner">
+      <a href="#top" class="logo">Divyaraj<span>.</span></a>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact" class="nav-cta">Contact</a>
+      </nav>
+    </div>
+    <div class="scroll-progress" id="scroll-progress"></div>
+  </header>
 
-    <main>
-      <Hero />
+  <main id="top">
+    <Hero />
+    <div class="container">
       <About />
       <Experience />
-    </main>
+      <Contact />
+    </div>
+  </main>
 
-    <Contact />
-  </div>
+  <script>
+    const root = document.documentElement;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Scroll reveal
+    const items = document.querySelectorAll<HTMLElement>("[data-reveal]");
+    if (reduce || !("IntersectionObserver" in window)) {
+      items.forEach((el) => el.classList.add("is-visible"));
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("is-visible");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+      );
+      items.forEach((el) => io.observe(el));
+    }
+
+    // Count-up stats
+    const counters = document.querySelectorAll<HTMLElement>("[data-count]");
+    const run = (el: HTMLElement) => {
+      const target = parseFloat(el.dataset.count || "0");
+      const suffix = el.dataset.suffix || "";
+      const decimals = (el.dataset.count || "").includes(".") ? 1 : 0;
+      if (reduce) { el.textContent = target.toFixed(decimals) + suffix; return; }
+      const start = performance.now();
+      const dur = 1400;
+      const tick = (t: number) => {
+        const p = Math.min((t - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = (target * eased).toFixed(decimals) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    if ("IntersectionObserver" in window) {
+      const cio = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { run(e.target as HTMLElement); cio.unobserve(e.target); }
+        });
+      }, { threshold: 0.6 });
+      counters.forEach((el) => cio.observe(el));
+    } else counters.forEach(run);
+
+    // Header state + progress bar + active nav link
+    const header = document.getElementById("site-header")!;
+    const bar = document.getElementById("scroll-progress")!;
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>(".site-header nav a"));
+    const sections = links
+      .map((a) => document.querySelector(a.getAttribute("href")!))
+      .filter(Boolean) as Element[];
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        header.classList.toggle("is-scrolled", y > 24);
+        const max = root.scrollHeight - window.innerHeight;
+        bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+        let current = -1;
+        sections.forEach((s, i) => {
+          if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) current = i;
+        });
+        links.forEach((a, i) => a.classList.toggle("is-active", i === current));
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    // Subtle hero parallax
+    const orbs = document.querySelectorAll<HTMLElement>("[data-parallax]");
+    if (!reduce && orbs.length) {
+      window.addEventListener("scroll", () => {
+        const y = window.scrollY;
+        if (y > window.innerHeight * 1.2) return;
+        orbs.forEach((o) => {
+          o.style.setProperty("--py", `${y * parseFloat(o.dataset.parallax!)}px`);
+        });
+      }, { passive: true });
+    }
+  </script>
 </BaseLayout>
-
